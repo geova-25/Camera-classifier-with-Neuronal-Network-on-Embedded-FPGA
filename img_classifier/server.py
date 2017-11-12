@@ -87,7 +87,7 @@ def reciveImage(data, ip):
     global folderNameNew, imgExtension, imgcounter
     #The original path of where the image will be received and adds the image
     #counter and the extension of the image that was received from the client
-    tempImgPath = str(imgcounter) + imgExtension
+    tempImgPath = "Images/"+str(imgcounter) + imgExtension
     #Create a file using the path defined above
     myfile = open(tempImgPath, 'wb')
     #Write the data of the received image because the file color_classifier needs
@@ -99,7 +99,7 @@ def reciveImage(data, ip):
     #im = Image.frombytes("L", (176,144), dataFinal)
     im = Image.frombytes("RGBA", (120,160), dataFinal)
     print "Creo"
-    im.save(str(imgcounter) + ".jpg", "JPEG")
+    im.save("Images/"+str(imgcounter) + ".jpg", "JPEG")
     print "Guardo"
     imgcounter += 1
 #------------------------------------------------------------------------------
