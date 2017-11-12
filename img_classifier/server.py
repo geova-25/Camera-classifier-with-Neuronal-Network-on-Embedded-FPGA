@@ -139,7 +139,7 @@ def receiveFromSocket(sock):
         connected_clients_sockets.remove(sock)
 
 connectSocket()
-showNetworkInfo()
+#showNetworkInfo()
 
 #Check always incomming sockets connections
 while True:
