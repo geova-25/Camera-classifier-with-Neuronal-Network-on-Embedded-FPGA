@@ -76,7 +76,7 @@ def reciveImage(data, ip):
     myfile.close()
     print("Store succesfull")
     #im = Image.frombytes("L", (176,144), dataFinal)
-    im = Image.frombytes("RGBA", (195,260), dataFinal)
+    im = Image.frombytes("RGBX", (195,260), dataFinal)
     print("Creo")
     im.save("Images/"+str(imgcounter) + ".jpg", "JPEG")
     print("Guardo")
