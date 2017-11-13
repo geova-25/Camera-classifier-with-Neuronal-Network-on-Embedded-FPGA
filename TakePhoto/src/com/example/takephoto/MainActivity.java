@@ -63,6 +63,7 @@ public class MainActivity extends Activity {
 	private void dispatchTakePictureIntent() {
 	    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 	    if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+	    	
 	        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
 	    }
 	}
@@ -72,6 +73,7 @@ public class MainActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 	        Bundle extras = data.getExtras();
+	      
 	        Bitmap imageBitmap = (Bitmap) extras.get("data");
 	        ImageView im = (ImageView)findViewById(R.id.imageView2);
 	        im.setImageBitmap(imageBitmap);
@@ -82,6 +84,7 @@ public class MainActivity extends Activity {
             ByteBuffer byteBuffer = ByteBuffer.allocate(size);
             imageBitmap.copyPixelsToBuffer(byteBuffer);
             
+          
             Toast.makeText(this, String.valueOf(imageBitmap.getWidth()), Toast.LENGTH_SHORT).show();
             Toast.makeText(this, String.valueOf(imageBitmap.getHeight()), Toast.LENGTH_SHORT).show();
             for(int i = 0; i< byteBuffer.array().length ; i++)
