@@ -58,6 +58,11 @@ def connectSocket():
 
 
 #------------------------------------------------------------------------------
+#----This function is in charge of sending the audio back to the app 
+
+def sendAudio(sck):
+    f = open('test.mp3', 'rb')
+    sck.sendall(f.read())
 
 #------------------------------------------------------------------------------
 #----This function is in charge of the receive image through socket to the server
@@ -107,6 +112,8 @@ def receiveFromSocket(sock):
             print("len data final: ", len(dataFinal))
             #Call function received image
         reciveImage(dataFinal, sock.getpeername()[0]);
+        #Aqui va la funcion que genera el audio
+        sendAudio(sock.getpeername()[0])
 
         print("Image Processed")
 
