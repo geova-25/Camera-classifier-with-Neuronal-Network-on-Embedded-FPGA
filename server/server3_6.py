@@ -13,7 +13,12 @@ import os
 from PIL import Image
 from sys import getsizeof
 import struct
+import bnn
+import numpy as np
+from gtts import gTTS
 
+from PIL import ImageEnhance
+from PIL import ImageOps
 
 #------------------------------------------------------------------------------
 #----Some local variables
@@ -32,9 +37,26 @@ MAX_CONS = 50
 buffer_size = 51200
 dataFinal = ''
 sizeActual = 0
+language = 'en'
 
 #------------------------------------------------------------------------------
-
+def clasificador(tipo):
+    
+    classifier = bnn.CnvClassifier(tipo, bnn.RUNTIME_SW)
+    im = Image.open('/home/xilinx/jupyter_notebooks/Camera-classifier-with-Neuronal-Network-on-Embedded-FPGA/server/Images/1.jpg')
+    
+    #Image enhancement                
+    contr = ImageEnhance.Contrast(im)
+    im = contr.enhance(3)                                                    # The enhancement values (contrast and brightness) 
+    bright = ImageEnhance.Brightness(im)                                     # depends on backgroud, external lights etc
+    im = bright.enhance(4.0)          
+    
+    class_out=classifier.classify_image(im)
+    classNumber= "Class number: {0}".format(class_out)
+    className= str(classifier.class_name(class_out))
+    className='Clasification is '+className
+    myobj = gTTS(text=className, lang=language, slow=False)
+    myobj.save("/home/xilinx/jupyter_notebooks/Camera-classifier-with-Neuronal-Network-on-Embedded-FPGA/server/Audio/test.mp3")
 #------------------------------------------------------------------------------
 #----This function is in charge of the connection to the socket of the server
 
@@ -80,7 +102,7 @@ def reciveImage(data, ip,le,wd):
     global folderNameNew, imgExtension, imgcounter
     #The original path of where the image will be received and adds the image
     #counter and the extension of the image that was received from the client
-    tempImgPath = "Images/"+str(imgcounter) + imgExtension
+    tempImgPath = "Images/1"+ imgExtension
     #Create a file using the path defined above
     myfile = open(tempImgPath, 'wb')
     #Write the data of the received image because the file color_classifier needs
@@ -89,10 +111,10 @@ def reciveImage(data, ip,le,wd):
     #Close the file
     myfile.close()
     print("Store succesfull")
-    im = Image.frombytes("RGBX", (wd,le), dataFinal)
-    #im = Image.frombytes("RGBX", (195,260), dataFinal)
+    #im = Image.frombytes("RGBX", (wd,le), dataFinal)
+    im = Image.frombytes("RGBX", (120,160), dataFinal)
     print("Creo")
-    im.save("Images/"+str(imgcounter) + ".jpg", "JPEG")
+    im.save("Images/"+"1"+ ".jpg", "JPEG")
     print("Guardo")
     imgcounter += 1
 #------------------------------------------------------------------------------
@@ -137,7 +159,7 @@ def receiveFromSocket(sock):
         #--------------------------------------
         #Aqui va la funcion que genera el audio
         #--------------------------------------
-
+        clasificador('cifar10')
         sendAudio(sock)
 
     except:
