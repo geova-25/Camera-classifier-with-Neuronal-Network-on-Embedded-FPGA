@@ -12,6 +12,8 @@ from random import randint
 import os
 from PIL import Image
 from sys import getsizeof
+import struct
+
 
 #------------------------------------------------------------------------------
 #----Some local variables
@@ -58,10 +60,16 @@ def connectSocket():
 def sendAudio(sck):
         print("Aqui1")
         f = open('Audio/test.mp3', 'rb')
-        print("Aqui2")
         audioData = f.read()
-        print("Aqui3")
+        print("Audio leido")
+        sizeOfData = os.path.getsize("Audio/test.mp3")
+        print("Size of data: ", str(sizeOfData))
+        #print(sck.send(str(sizeOfData).encode('utf-8')))
+        p = struct.pack('!i',sizeOfData)
+        print(sck.sendall(p))
+        print("Size enviado")
         print(sck.sendall(audioData))
+        print("Audio enviado")
         f.close()
         print("Image Processed")
 
@@ -116,9 +124,12 @@ def receiveFromSocket(sock):
             print("len data final: ", len(dataFinal))
             #Call function received image
         reciveImage(dataFinal, sock.getpeername()[0]);
-        #Aqui va la funcion que genera el audio
-        sendAudio(sock)
 
+        #--------------------------------------
+        #Aqui va la funcion que genera el audio
+        #--------------------------------------
+
+        sendAudio(sock)
 
     except:
         #In error close the socket or call it after Bye to destroy it
