@@ -11,6 +11,7 @@ import socket, select
 from random import randint
 import os
 from PIL import Image
+from sys import getsizeof
 
 #------------------------------------------------------------------------------
 #----Some local variables
@@ -29,13 +30,6 @@ MAX_CONS = 50
 buffer_size = 51200
 dataFinal = ''
 sizeActual = 0
-
-#------------------------------------------------------------------------------
-#----Get the data from the config file using the parser.py file imported
-
-#notTrustedList, acceptedList  = parserConfig.parse()
-
-#------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
 
@@ -59,10 +53,17 @@ def connectSocket():
 
 #------------------------------------------------------------------------------
 #----This function is in charge of sending the audio back to the app 
+#----Rececive as argument the socked to the one is going to be send the audio
 
 def sendAudio(sck):
-    f = open('test.mp3', 'rb')
-    sck.sendall(f.read())
+        print("Aqui1")
+        f = open('Audio/test.mp3', 'rb')
+        print("Aqui2")
+        audioData = f.read()
+        print("Aqui3")
+        print(sck.sendall(audioData))
+        f.close()
+        print("Image Processed")
 
 #------------------------------------------------------------------------------
 #----This function is in charge of the receive image through socket to the server
@@ -80,8 +81,8 @@ def reciveImage(data, ip):
     #Close the file
     myfile.close()
     print("Store succesfull")
-    #im = Image.frombytes("L", (176,144), dataFinal)
-    im = Image.frombytes("RGBX", (195,260), dataFinal)
+    im = Image.frombytes("RGBX", (120,160), dataFinal)
+    #im = Image.frombytes("RGBX", (195,260), dataFinal)
     print("Creo")
     im.save("Images/"+str(imgcounter) + ".jpg", "JPEG")
     print("Guardo")
@@ -96,14 +97,17 @@ def receiveFromSocket(sock):
     try:
         size_str = ""
         size_int = 0
+        buffer_size = 54
+        #buffer_size = 51200
         #Obtains data from buffer of socket
         print("--------------")
         sizea = str(sock.recv(buffer_size)).replace('b','').replace("'","")
-        print("Size Bytes: ", sizea)
+        print("Size Bytes: ", getsizeof(sizea))
         size_str = str(sizea)
         print("Size Srt: ", size_str)
         size_int = int(size_str)
         print("Size Int: ", size_int)
+        buffer_size = 51200
         dataFinal = sock.recv(buffer_size)
         print("len data final: ", len(dataFinal))
         while(size_int != len(dataFinal)):
@@ -113,9 +117,8 @@ def receiveFromSocket(sock):
             #Call function received image
         reciveImage(dataFinal, sock.getpeername()[0]);
         #Aqui va la funcion que genera el audio
-        sendAudio(sock.getpeername()[0])
+        sendAudio(sock)
 
-        print("Image Processed")
 
     except:
         #In error close the socket or call it after Bye to destroy it
@@ -124,8 +127,9 @@ def receiveFromSocket(sock):
         #Eliminated from the list of clients sockets
         connected_clients_sockets.remove(sock)
 
+
+
 connectSocket()
-#showNetworkInfo()
 
 #Check always incomming sockets connections
 while True:
