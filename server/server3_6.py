@@ -76,7 +76,7 @@ def sendAudio(sck):
 #------------------------------------------------------------------------------
 #----This function is in charge of the receive image through socket to the server
 
-def reciveImage(data, ip):
+def reciveImage(data, ip,le,wd):
     global folderNameNew, imgExtension, imgcounter
     #The original path of where the image will be received and adds the image
     #counter and the extension of the image that was received from the client
@@ -89,7 +89,7 @@ def reciveImage(data, ip):
     #Close the file
     myfile.close()
     print("Store succesfull")
-    im = Image.frombytes("RGBX", (120,160), dataFinal)
+    im = Image.frombytes("RGBX", (wd,le), dataFinal)
     #im = Image.frombytes("RGBX", (195,260), dataFinal)
     print("Creo")
     im.save("Images/"+str(imgcounter) + ".jpg", "JPEG")
@@ -108,8 +108,17 @@ def receiveFromSocket(sock):
         buffer_size = 54
         #buffer_size = 51200
         #Obtains data from buffer of socket
+        sizea_str = str(sock.recv(buffer_size)).replace('b','').replace("'","")
+        length_str = str(sock.recv(buffer_size)).replace('b','').replace("'","")
+        width_str = str(sock.recv(buffer_size)).replace('b','').replace("'","")
+        sizea = int(sizea_str)
+        length = int(length_str)
+        width  = int(width_str)
+        print("length",length)
+        print("width",width)
+        print("sizea",sizea)
         print("--------------")
-        sizea = str(sock.recv(buffer_size)).replace('b','').replace("'","")
+        #sizea = str(sock.recv(buffer_size)).replace('b','').replace("'","")
         print("Size Bytes: ", getsizeof(sizea))
         size_str = str(sizea)
         print("Size Srt: ", size_str)
@@ -123,7 +132,7 @@ def receiveFromSocket(sock):
             dataFinal = dataFinal + sock.recv(buffer_size);
             print("len data final: ", len(dataFinal))
             #Call function received image
-        reciveImage(dataFinal, sock.getpeername()[0]);
+        reciveImage(dataFinal, sock.getpeername()[0],length,width);
 
         #--------------------------------------
         #Aqui va la funcion que genera el audio
