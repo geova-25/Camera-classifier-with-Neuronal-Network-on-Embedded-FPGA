@@ -41,17 +41,17 @@ language = 'en'
 
 #------------------------------------------------------------------------------
 def clasificador(tipo):
-    
+
     classifier = bnn.CnvClassifier(tipo, bnn.RUNTIME_SW)
     im = Image.open('/home/xilinx/jupyter_notebooks/Camera-classifier-with-Neuronal-Network-on-Embedded-FPGA/server/Images/1.jpg')
     #im = Image.open('/home/xilinx/jupyter_notebooks/bnn/deer.jpg')
-    
-    #Image enhancement                
+
+    #Image enhancement
  #   contr = ImageEnhance.Contrast(im)
-  #  im = contr.enhance(3)                                                    # The enhancement values (contrast and brightness) 
+  #  im = contr.enhance(3)                                                    # The enhancement values (contrast and brightness)
   #  bright = ImageEnhance.Brightness(im)                                     # depends on backgroud, external lights etc
-  #  im = bright.enhance(4.0)          
-    
+  #  im = bright.enhance(4.0)
+
     class_out=classifier.classify_image(im)
     classNumber= "Class number: {0}".format(class_out)
     className= str(classifier.class_name(class_out))
@@ -77,7 +77,7 @@ def connectSocket():
 
 
 #------------------------------------------------------------------------------
-#----This function is in charge of sending the audio back to the app 
+#----This function is in charge of sending the audio back to the app
 #----Rececive as argument the socked to the one is going to be send the audio
 
 def sendAudio(sck):
@@ -131,12 +131,22 @@ def receiveFromSocket(sock):
         buffer_size = 54
         #buffer_size = 51200
         #Obtains data from buffer of socket
+        type_of_net = str(sock.recv(buffer_size)).replace('b','').replace("'","")
+        if(type_of_net == "1"):
+            print("ciphar10")
+            type_of_net = "ciphar10"
+        if(type_of_net == "2"):
+            print("shvn")
+            type_of_net = "shvn"
+        if(type_of_net == "3"):
+            print("mnist")
         sizea_str = str(sock.recv(buffer_size)).replace('b','').replace("'","")
         length_str = str(sock.recv(buffer_size)).replace('b','').replace("'","")
         width_str = str(sock.recv(buffer_size)).replace('b','').replace("'","")
         sizea = int(sizea_str)
         length = int(length_str)
         width  = int(width_str)
+        print("type_of_net",type_of_net)
         print("length",length)
         print("width",width)
         print("sizea",sizea)
@@ -160,7 +170,7 @@ def receiveFromSocket(sock):
         #--------------------------------------
         #Aqui va la funcion que genera el audio
         #--------------------------------------
-        clasificador('streetview')
+        clasificador(type_of_net)
         sendAudio(sock)
 
     except:

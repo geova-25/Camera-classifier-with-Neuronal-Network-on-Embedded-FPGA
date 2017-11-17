@@ -41,11 +41,11 @@ language = 'en'
 
 #------------------------------------------------------------------------------
 def clasificador(tipo):
-    
+
     ##########classifier = bnn.CnvClassifier(tipo, bnn.RUNTIME_SW)
     ####im = Image.open('/home/xilinx/jupyter_notebooks/Camera-classifier-with-Neuronal-Network-on-Embedded-FPGA/server/Images/1.jpg')
     im = Image.open('Images/1.jpg')
-            
+
     ################class_out=classifier.classify_image(im)
     class_out=pr.recog()
     print
@@ -74,7 +74,7 @@ def connectSocket():
 
 
 #------------------------------------------------------------------------------
-#----This function is in charge of sending the audio back to the app 
+#----This function is in charge of sending the audio back to the app
 #----Rececive as argument the socked to the one is going to be send the audio
 
 def sendAudio(sck):
@@ -125,15 +125,18 @@ def receiveFromSocket(sock):
     try:
         size_str = ""
         size_int = 0
-        buffer_size = 54
+        buffer_size = 100
         #buffer_size = 51200
         #Obtains data from buffer of socket
+        type_of_net = str(sock.recv(buffer_size))
+        buffer_size = 54
         sizea_str = str(sock.recv(buffer_size)).replace('b','').replace("'","")
         length_str = str(sock.recv(buffer_size)).replace('b','').replace("'","")
         width_str = str(sock.recv(buffer_size)).replace('b','').replace("'","")
         sizea = int(sizea_str)
         length = int(length_str)
         width  = int(width_str)
+        print("type",type_of_net)
         print("length",length)
         print("width",width)
         print("sizea",sizea)
