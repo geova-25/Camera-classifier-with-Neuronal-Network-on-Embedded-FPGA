@@ -44,12 +44,13 @@ def clasificador(tipo):
     
     classifier = bnn.CnvClassifier(tipo, bnn.RUNTIME_SW)
     im = Image.open('/home/xilinx/jupyter_notebooks/Camera-classifier-with-Neuronal-Network-on-Embedded-FPGA/server/Images/1.jpg')
+    #im = Image.open('/home/xilinx/jupyter_notebooks/bnn/deer.jpg')
     
     #Image enhancement                
-    contr = ImageEnhance.Contrast(im)
-    im = contr.enhance(3)                                                    # The enhancement values (contrast and brightness) 
-    bright = ImageEnhance.Brightness(im)                                     # depends on backgroud, external lights etc
-    im = bright.enhance(4.0)          
+ #   contr = ImageEnhance.Contrast(im)
+  #  im = contr.enhance(3)                                                    # The enhancement values (contrast and brightness) 
+  #  bright = ImageEnhance.Brightness(im)                                     # depends on backgroud, external lights etc
+  #  im = bright.enhance(4.0)          
     
     class_out=classifier.classify_image(im)
     classNumber= "Class number: {0}".format(class_out)
@@ -111,8 +112,8 @@ def reciveImage(data, ip,le,wd):
     #Close the file
     myfile.close()
     print("Store succesfull")
-    #im = Image.frombytes("RGBX", (wd,le), dataFinal)
-    im = Image.frombytes("RGBX", (120,160), dataFinal)
+    im = Image.frombytes("RGBX", (wd,le), dataFinal)
+    #im = Image.frombytes("RGBX", (120,160), dataFinal)
     print("Creo")
     im.save("Images/"+"1"+ ".jpg", "JPEG")
     print("Guardo")
@@ -159,7 +160,7 @@ def receiveFromSocket(sock):
         #--------------------------------------
         #Aqui va la funcion que genera el audio
         #--------------------------------------
-        clasificador('cifar10')
+        clasificador('streetview')
         sendAudio(sock)
 
     except:
