@@ -1,11 +1,14 @@
 package com.example.takephoto;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.provider.MediaStore;
@@ -68,6 +71,9 @@ public class MainActivity extends Activity {
 	        
 	        
 	    }
+	    
+	    
+	    
 	}
 	
 	
@@ -75,21 +81,47 @@ public class MainActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 	        Bundle extras = data.getExtras();
-	        Bitmap imageBitmap = (Bitmap) extras.get("data");
+	        
+	        
+	        Bitmap bm = (Bitmap) extras.get("data");
+	     // Find the last picture
+	        String[] projection = new String[]{
+	            MediaStore.Images.ImageColumns._ID,
+	            MediaStore.Images.ImageColumns.DATA,
+	            MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
+	            MediaStore.Images.ImageColumns.DATE_TAKEN,
+	            MediaStore.Images.ImageColumns.MIME_TYPE
+	            };
+	        final Cursor cursor = this.getContentResolver()
+	                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, 
+	                       null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
+
 	        ImageView im = (ImageView)findViewById(R.id.imageView2);
-	        im.setImageBitmap(imageBitmap);
-	        Toast.makeText(this, String.valueOf(imageBitmap.getByteCount()), Toast.LENGTH_SHORT).show();
+	        im.setVisibility(View.VISIBLE);
+	        
+	        // Put it in the image view
+	        if (cursor.moveToFirst()) {
+	            
+	            String imageLocation = cursor.getString(1);
+	            File imageFile = new File(imageLocation);
+	            if (imageFile.exists()) {   // TODO: is there a better way to do this?
+	                bm = BitmapFactory.decodeFile(imageLocation);
+	                im.setImageBitmap(bm);         
+	            }
+	        } 
+	        
+	        Toast.makeText(this, String.valueOf( bm.getByteCount()), Toast.LENGTH_SHORT).show();
 	      
-	        int size = imageBitmap.getRowBytes() * imageBitmap.getHeight();
+	        int size = bm.getRowBytes() * bm.getHeight();
             ByteBuffer byteBuffer = ByteBuffer.allocate(size);
-            imageBitmap.copyPixelsToBuffer(byteBuffer);
+            bm.copyPixelsToBuffer(byteBuffer);
             
           
-            Toast.makeText(this, String.valueOf(imageBitmap.getWidth()), Toast.LENGTH_SHORT).show();
-            Toast.makeText(this, String.valueOf(imageBitmap.getHeight()), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, String.valueOf(bm.getWidth()), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, String.valueOf(bm.getHeight()), Toast.LENGTH_SHORT).show();
             
             
-            fs.sendFeatures(byteBuffer.array(), this,imageBitmap.getHeight(),imageBitmap.getWidth() );
+            fs.sendFeatures(byteBuffer.array(), this,bm.getHeight(),bm.getWidth() );
             fs.receiveMp3(this);
        
 	    }
@@ -105,7 +137,7 @@ public class MainActivity extends Activity {
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 		alertDialogBuilder.setMessage("Ingrese ip");
 		final EditText input = new EditText(this);
-		input.setText("192.168.0.102");
+		input.setText("172.19.13.193");
 		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
 		       LinearLayout.LayoutParams.MATCH_PARENT,
 		       LinearLayout.LayoutParams.MATCH_PARENT);

@@ -13,22 +13,24 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/button1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:onClick="event_take_photo"
-            android:text="Take photo" />
+    
 
         <ImageView
             android:id="@+id/imageView2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="60dp"
+            android:visibility="invisible"
             android:layout_weight="0.28"
             android:src="@drawable/ic_launcher" />
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="event_take_photo"
+            android:text="Take photo" />
+
     </LinearLayout>
 
 </RelativeLayout>
