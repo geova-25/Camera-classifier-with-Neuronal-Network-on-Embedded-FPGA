@@ -7,6 +7,8 @@ from skimage.feature import hog
 import numpy as np
 import argparse as ap
 import sys
+import h5py
+from keras.models import load_model
 from sklearn.externals import joblib
 
 def view_image(image):
@@ -36,8 +38,7 @@ def recog():
 	rects = [cv2.boundingRect(ctr) for ctr in ctrs]
 
 	#load the presaved model
-	clf = joblib.load('model.pkl')
-
+	clf = load_model('my_model.h5')
 	# For each rectangular region, calculate HOG features and predict
 	# the digit using Linear SVM.
 	res = ""
@@ -47,15 +48,15 @@ def recog():
 		pt2 = int(rect[0] + rect[2] // 2 - leng // 2)
 		roi = im_th[pt1:pt1+leng, pt2:pt2+leng]
 		# Resize the image
+		
 		roi = cv2.resize(roi, (28, 28), interpolation=cv2.INTER_AREA)
 		roi = cv2.dilate(roi, (3, 3))
+		roi = roi.reshape(1, 1, 28, 28)
 	
-		view_image(roi)
+		#view_image(roi)
 		roi = roi/255.0*2 - 1 
-		result = clf.predict(roi.reshape(1,784))[0]
+		result = clf.predict_classes(roi)[0]
 		res = res +" "+ str(int(result))  
 		
 	return res
-
-
 
