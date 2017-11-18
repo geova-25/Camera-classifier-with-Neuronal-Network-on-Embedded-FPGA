@@ -2,6 +2,8 @@ package com.example.takephoto;
 
 import java.io.File;
 import java.nio.ByteBuffer;
+
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -18,12 +20,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 
 public class MainActivity extends Activity {
 
-	
+	private int net = 0;
 	FeatureStreamer fs = new FeatureStreamer();
 	  
 	@Override
@@ -34,7 +38,7 @@ public class MainActivity extends Activity {
 		
 		
 		 predict();
-		 
+		
 		
 		
 		
@@ -56,6 +60,7 @@ public class MainActivity extends Activity {
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
+			Select_net();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -121,15 +126,55 @@ public class MainActivity extends Activity {
             Toast.makeText(this, String.valueOf(bm.getHeight()), Toast.LENGTH_SHORT).show();
             
             
-            fs.sendFeatures(byteBuffer.array(), this,bm.getHeight(),bm.getWidth() );
+            fs.sendFeatures(byteBuffer.array(), this,bm.getHeight(),bm.getWidth(), net );
             fs.receiveMp3(this);
+            
+            
        
 	    }
 	}
 	
+	public void Select_net()
+	{
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		alertDialogBuilder.setMessage("Seleccione Red Neuronal");
+		
+	    
+	    RadioGroup rd = new RadioGroup(this);
+		final RadioButton cifar = new RadioButton(this);
+		final RadioButton svn = new RadioButton(this);
+		final RadioButton mnist = new RadioButton(this);
+		cifar.setText("cifar10");
+		svn.setText("shvn");
+		mnist.setText("MNIST");
+		rd.addView(cifar);
+		rd.addView(svn);
+		rd.addView(mnist);
+	     
+		alertDialogBuilder.setView(rd);
+		 
+	    alertDialogBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+	    @Override
+	    public void onClick(DialogInterface arg0, int arg1) 
+	    {  	 
+	    	if(cifar.isChecked())
+	    		net = 1;
+	    	if(svn.isChecked())
+	    		net = 2;
+	    	if (mnist.isChecked())
+	    		net =3;
+	    	
+		}
+	    });
+	    AlertDialog alertDialog = alertDialogBuilder.create();
+	    alertDialog.show();
+	}
+	
 	public void event_take_photo(View n)
 	{
+		
 		dispatchTakePictureIntent();
+		
     	
 	}
 	public void predict()
@@ -137,17 +182,20 @@ public class MainActivity extends Activity {
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 		alertDialogBuilder.setMessage("Ingrese ip");
 		final EditText input = new EditText(this);
-		input.setText("172.19.13.193");
+		input.setText("192.168.1.4");
 		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
 		       LinearLayout.LayoutParams.MATCH_PARENT,
 		       LinearLayout.LayoutParams.MATCH_PARENT);
 	    input.setLayoutParams(lp);
-	    alertDialogBuilder.setView(input);
+	     
+		alertDialogBuilder.setView(input);
+		 
 	    alertDialogBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
 	    @Override
 	    public void onClick(DialogInterface arg0, int arg1) 
 	    {  	 
 	    	fs.connect(input.getText().toString(), 6666);
+	    	Select_net();
 	    	
 		}
 	    });

@@ -92,11 +92,13 @@ class FeatureStreamer {
 
 	}
 
-	void sendFeatures(byte[] send, Activity act, int height, int width) {
+	void sendFeatures(byte[] send, Activity act, int height, int width, int net) {
 
 		try {
 			if (dos != null) {
 				
+				dos.writeBytes(String.valueOf(net));
+				Thread.sleep(400);
 				dos.writeBytes(String.valueOf(send.length));
 				Thread.sleep(400);
 				dos.writeBytes(String.valueOf(height));
